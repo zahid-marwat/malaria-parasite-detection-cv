@@ -1,0 +1,86 @@
+{
+  "binary_classification": {
+    "0": "Uninfected",
+    "1": "Infected"
+  },
+  "multiclass_classification": {
+    "0": "Uninfected",
+    "1": "P. falciparum",
+    "2": "P. vivax",
+    "3": "P. ovale",
+    "4": "P. malariae",
+    "5": "P. knowlesi",
+    "6": "Mixed infection"
+  },
+  "description": {
+    "parasite_types": {
+      "P. falciparum": {
+        "name": "Plasmodium falciparum",
+        "severity": "Most dangerous",
+        "characteristics": "Small parasites, ring forms common, multiple rings in RBCs",
+        "clinical_impact": "Cerebral malaria, severe anemia, organ failure"
+      },
+      "P. vivax": {
+        "name": "Plasmodium vivax",
+        "severity": "Moderate",
+        "characteristics": "Larger parasites, pale cytoplasm, infected RBCs larger and distorted",
+        "clinical_impact": "Relapsing fevers, hypnozoites cause relapses"
+      },
+      "P. ovale": {
+        "name": "Plasmodium ovale",
+        "severity": "Moderate",
+        "characteristics": "Similar to P. vivax, infected RBCs more oval/fimbriated",
+        "clinical_impact": "Similar to P. vivax, rare relapse"
+      },
+      "P. malariae": {
+        "name": "Plasmodium malariae",
+        "severity": "Mild to moderate",
+        "characteristics": "Smallest parasites, infected RBCs normal size",
+        "clinical_impact": "Quartan fever pattern (every 72 hours)"
+      },
+      "P. knowlesi": {
+        "name": "Plasmodium knowlesi",
+        "severity": "Severe",
+        "characteristics": "Can look like P. malariae, rapid replication",
+        "clinical_impact": "Rapid disease progression, can mimic P. falciparum"
+      }
+    },
+    "thick_blood_smear": {
+      "definition": "Concentration of blood on microscope slide without RBC lysis",
+      "advantages": [
+        "Concentrates parasites 20-40 fold",
+        "Higher sensitivity for low parasitemia",
+        "Cost-effective and simple to prepare",
+        "Suitable for rural/resource-limited settings"
+      ],
+      "disadvantages": [
+        "Difficult species identification",
+        "Requires skilled microscopists",
+        "False negative rates 10-20%",
+        "Operator-dependent quality"
+      ],
+      "interpretation": {
+        "parasites_per_microliter": "Parasitemia level - correlates with disease severity",
+        "detection_sensitivity": "50-90% depending on parasitemia level and operator skill"
+      }
+    }
+  },
+  "clinical_cutoffs": {
+    "parasitemia_levels": {
+      "low": "< 1000 parasites/μL",
+      "moderate": "1000 - 10000 parasites/μL",
+      "high": "> 10000 parasites/μL"
+    },
+    "positive_threshold": {
+      "default": 0.5,
+      "high_sensitivity": 0.3,
+      "description": "Lower threshold prioritizes sensitivity (catches more cases) at cost of specificity"
+    }
+  },
+  "model_output_interpretation": {
+    "confidence": "Probability score from 0 to 1 (not a clinical probability)",
+    "sensitivity": "Percentage of actual infected cases correctly identified by model",
+    "specificity": "Percentage of actual uninfected cases correctly identified by model",
+    "note": "Always require human expert verification before clinical decision-making"
+  }
+}
