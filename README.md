@@ -2,23 +2,23 @@
 
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Status](https://img.shields.io/badge/status-Research%20%26%20Educational-orange.svg)
-⚠️ **IMPORTANT**: See [MEDICAL_DISCLAIMER.md](MEDICAL_DISCLAIMER.md) - This is for research/educational purposes, NOT clinical use.
+**IMPORTANT**: See [MEDICAL_DISCLAIMER.md](MEDICAL_DISCLAIMER.md) - This is for research/educational purposes, NOT clinical use.
 
-## 📋 Overview
+## Overview
 
 This comprehensive system leverages deep learning and computer vision to detect and classify malaria parasites in thick blood smear microscopy images. Designed with medical AI best practices, it prioritizes **high sensitivity** (minimizing false negatives) for potential malaria cases in resource-limited healthcare settings.
 
 **Key Features**:
-- 🔬 Medical-grade image preprocessing optimized for microscopy characteristics
-- 🧠 Multiple CNN architectures (baseline, custom medical CNN, transfer learning)
-- 📊 Clinical-appropriate evaluation metrics (sensitivity, specificity, NPV)
-- 🎯 Grad-CAM interpretability to understand model predictions
-- 📈 Complete training pipeline with early stopping and model checkpointing
-- 🚀 Production-ready inference with REST API
-- 📱 Mobile-optimized inference for edge devices
-- 📚 Comprehensive documentation and Jupyter notebooks
+- Medical-grade image preprocessing optimized for microscopy characteristics
+- Multiple CNN architectures (baseline, custom medical CNN, transfer learning)
+- Clinical-appropriate evaluation metrics (sensitivity, specificity, NPV)
+- Grad-CAM interpretability to understand model predictions
+- Complete training pipeline with early stopping and model checkpointing
+- Production-ready inference with REST API
+- Mobile-optimized inference for edge devices
+- Comprehensive documentation and Jupyter notebooks
 
-## 🏥 Medical Background
+## Medical Background
 
 ### Malaria and Microscopy
 **Malaria** is a life-threatening parasitic disease transmitted by *Anopheles* mosquitoes. Early detection is critical for:
@@ -55,7 +55,7 @@ The system can detect:
   - Different microscope types
   - Expert-annotated labels
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Installation
 
@@ -128,7 +128,7 @@ curl -X POST http://localhost:8000/predict \
   -F "image=@blood_smear.jpg"
 ```
 
-## 📊 Model Performance
+## Model Performance
 
 ### Baseline CNN
 | Metric | Value |
@@ -147,14 +147,36 @@ curl -X POST http://localhost:8000/predict \
 | **NPV** | **98%** |
 
 **Key Performance Indicators**:
-- 🎯 **Sensitivity (Recall)**: % of infected cases correctly identified (CRITICAL - minimize false negatives)
-- 📌 **Specificity**: % of uninfected cases correctly identified
-- 🎲 **NPV (Negative Predictive Value)**: Confidence that a negative prediction is correct
-- 📈 **AUC-ROC**: Overall discrimination ability
+- **Sensitivity (Recall)**: % of infected cases correctly identified (CRITICAL - minimize false negatives)
+- **Specificity**: % of uninfected cases correctly identified
+- **NPV (Negative Predictive Value)**: Confidence that a negative prediction is correct
+- **AUC-ROC**: Overall discrimination ability
 
-⚠️ **Medical Priority**: Sensitivity > Specificity (false negatives are more harmful than false positives)
+**Medical Priority**: Sensitivity > Specificity (false negatives are more harmful than false positives)
 
-## 📁 Project Structure
+## Recent YOLO Experiments (2026-02)
+
+**Setup (runs/detect/results/yolo_runs/yolo11n_long)**
+- Model: YOLO11n pretrained weights (yolo11n.pt), detection task (nc=1).
+- Training: 80 epochs, imgsz=416, batch=4, optimizer=SGD (lr0=0.005, momentum=0.937, weight_decay=0.0005), mosaic disabled, device=CPU.
+- Data: data/Processed/yolo_malaria/dataset.yaml (train/val split as prepared by pipeline).
+
+**Final metrics (val, last epoch)**
+
+| Precision | Recall | mAP50 | mAP50-95 |
+|-----------|--------|-------|----------|
+| 0.0 | 0.0 | 0.0 | 0.0 |
+
+**Analytics & artifacts**
+- Loss curves and metrics plots: runs/detect/results/yolo_runs/yolo11n_long/results.png.
+- PR/Recall/F1 curves: runs/detect/results/yolo_runs/yolo11n_long/Box*.png.
+- Sample batches and predictions: runs/detect/results/yolo_runs/yolo11n_long/train_batch*.jpg and val_batch*_pred.jpg.
+- Confusion matrices: runs/detect/results/yolo_runs/yolo11n_long/confusion_matrix*.png.
+
+**Takeaways**
+- Training converged to near-zero losses but metrics stayed at 0, suggesting label/target issues or a degenerate one-class setup. Verify annotations and class mapping, then rerun (longer epochs and ensuring labels are visible to the model).
+
+## Project Structure
 
 ```
 malaria-parasite-detection-cv/
@@ -261,7 +283,7 @@ malaria-parasite-detection-cv/
     └── predictions/
 ```
 
-## 🔧 Data Pipeline
+## Data Pipeline
 
 ### 1. Data Loading
 ```python
@@ -296,7 +318,7 @@ Medical-safe augmentations (do NOT create medically invalid images):
 - Horizontal/Vertical flips: Appropriate for microscopy
 - Brightness/contrast: Handle illumination variations
 - Elastic deformations: Subtle geometric variations
-- ❌ Extreme rotations, extreme color shifts, or clinically impossible transformations
+- Avoid extreme rotations, extreme color shifts, or clinically impossible transformations
 
 ```python
 from src.data.augmentation import MedicalImageAugmenter
@@ -319,7 +341,7 @@ splitter = StratifiedSplitter(test_size=0.15, val_size=0.15)
 train_data, val_data, test_data = splitter.split(images, labels)
 ```
 
-## 🧠 Model Architectures
+## Model Architectures
 
 ### Baseline CNN
 Simple 3-5 layer CNN for quick iteration and baseline establishment.
@@ -367,7 +389,7 @@ ensemble = EnsembleModel(
 predictions = ensemble.predict(test_images)
 ```
 
-## 📚 Training
+## Training
 
 ### Configuration
 ```yaml
@@ -406,14 +428,14 @@ history = trainer.train(
 ```
 
 ### Key Training Features
-- ✅ Class weight balancing for imbalanced datasets
-- ✅ Early stopping on validation sensitivity (not accuracy!)
-- ✅ Learning rate scheduling (ReduceLROnPlateau)
-- ✅ Model checkpointing (save best by sensitivity)
-- ✅ TensorBoard logging for monitoring
-- ✅ K-fold cross-validation for robust evaluation
+- Class weight balancing for imbalanced datasets
+- Early stopping on validation sensitivity (not accuracy!)
+- Learning rate scheduling (ReduceLROnPlateau)
+- Model checkpointing (save best by sensitivity)
+- TensorBoard logging for monitoring
+- K-fold cross-validation for robust evaluation
 
-## 📊 Evaluation Metrics
+## Evaluation Metrics
 
 ### Clinical Metrics
 ```python
@@ -461,7 +483,7 @@ heatmap = grad_cam.generate_heatmap(image, layer_name='conv_last')
 overlay = grad_cam.overlay_heatmap(image, heatmap)
 ```
 
-## 🚀 Inference
+## Inference
 
 ### Single Image Prediction
 ```python
@@ -511,7 +533,7 @@ curl -X POST http://localhost:8000/predict \
 # }
 ```
 
-## 📱 Mobile Inference
+## Mobile Inference
 Optimized inference for edge devices (smartphones, raspberry pi):
 
 ```python
@@ -526,7 +548,7 @@ engine = MobileInferenceEngine(
 prediction = engine.predict(image_path='blood_smear.jpg')
 ```
 
-## 📖 Notebooks
+## Notebooks
 
 ### 01_data_exploration.ipynb
 - Visualize dataset structure
@@ -558,7 +580,7 @@ prediction = engine.predict(image_path='blood_smear.jpg')
 - Identify failure modes
 - Clinical decision support analysis
 
-## 🧪 Testing
+## Testing
 
 ```bash
 # Run all tests
@@ -572,15 +594,15 @@ pytest tests/ --cov=src --cov-report=html
 ```
 
 ### Test Coverage
-- ✅ Data loading and validation
-- ✅ Preprocessing and augmentation
-- ✅ Model architecture instantiation
-- ✅ Training loop functionality
-- ✅ Metrics calculation
-- ✅ Inference pipeline
-- ✅ API endpoints
+- Data loading and validation
+- Preprocessing and augmentation
+- Model architecture instantiation
+- Training loop functionality
+- Metrics calculation
+- Inference pipeline
+- API endpoints
 
-## 🔒 Security & Privacy
+## Security & Privacy
 
 - **Data Privacy**: Never commit actual patient data to version control
 - **HIPAA Compliance** (if applicable): Implement proper de-identification
@@ -588,7 +610,7 @@ pytest tests/ --cov=src --cov-report=html
 - **Model Versioning**: Track model versions for reproducibility
 - **Input Validation**: Validate all incoming images
 
-## 📋 Documentation
+## Documentation
 
 ### docs/medical_background.md
 - Malaria epidemiology and public health impact
@@ -614,48 +636,48 @@ pytest tests/ --cov=src --cov-report=html
 - Regulatory compliance considerations
 - Training for clinical staff
 
-## 🏆 Best Practices
+## Best Practices
 
 ### Data Best Practices
-✅ **Do:**
+Do:
 - Maintain stratified train/val/test splits
 - Document data sources and annotations
-- Regular data quality audits
+- Perform regular data quality audits
 - Implement data versioning
 
-❌ **Don't:**
+Do not:
 - Use test data for hyperparameter tuning
 - Commit raw patient data
 - Mix training and test data
 - Ignore class imbalance
 
 ### Model Development
-✅ **Do:**
+Do:
 - Prioritize sensitivity over accuracy
 - Validate with medical experts
 - Maintain audit trails
 - Version all models
 
-❌ **Don't:**
+Do not:
 - Trust a single metric
 - Deploy unvalidated models
 - Ignore model uncertainty
 - Use outdated models in production
 
 ### Clinical Deployment
-✅ **Do:**
+Do:
 - Require explicit human review
 - Provide confidence scores
 - Log all predictions
 - Include medical disclaimers
 
-❌ **Don't:**
+Do not:
 - Present as diagnostic tool without validation
 - Skip clinical trials
 - Deploy without regulatory approval
 - Ignore ethical considerations
 
-## 🔄 Ethical Framework
+## Ethical Framework
 
 This project follows **Medical AI Ethics** principles:
 
@@ -667,7 +689,7 @@ This project follows **Medical AI Ethics** principles:
 6. **Privacy**: Protect patient confidentiality
 7. **Justice**: Address healthcare disparities
 
-## 📦 Dependencies & Versions
+## Dependencies & Versions
 
 - Python 3.8+
 - TensorFlow 2.13+
@@ -675,7 +697,7 @@ This project follows **Medical AI Ethics** principles:
 - CUDA 11.8+ (for GPU acceleration)
 - See `requirements.txt` for complete list
 
-## 🚀 Performance Optimization
+## Performance Optimization
 
 ### GPU Acceleration
 ```bash
@@ -692,7 +714,7 @@ python -c "import torch; print(torch.cuda.is_available())"
 - Pruning: Remove unnecessary weights
 - ONNX export: Cross-platform inference
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
@@ -719,18 +741,18 @@ python -c "import torch; print(torch.cuda.is_available())"
 # Increase data augmentation
 ```
 
-## 📞 Support & Contributing
+## Support & Contributing
 
 - Report issues via GitHub issues
 - Submit pull requests for improvements
 - Share clinical validation results
 - Help improve documentation
 
-## 📜 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## ⚠️ CRITICAL: Medical Disclaimer
+## CRITICAL: Medical Disclaimer
 
 **This system is NOT approved for clinical diagnostic use.**
 
@@ -741,7 +763,7 @@ Before any clinical deployment, you MUST:
 4. Ensure ethics board approval
 5. Implement proper safeguards
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - WHO Malaria Elimination Initiative
 - Centers for Disease Control (CDC)
