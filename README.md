@@ -167,11 +167,18 @@ curl -X POST http://localhost:8000/predict \
 |-----------|--------|-------|----------|
 | 0.0 | 0.0 | 0.0 | 0.0 |
 
-**Analytics & artifacts**
-- Loss curves and metrics plots: runs/detect/results/yolo_runs/yolo11n_long/results.png.
-- PR/Recall/F1 curves: runs/detect/results/yolo_runs/yolo11n_long/Box*.png.
-- Sample batches and predictions: runs/detect/results/yolo_runs/yolo11n_long/train_batch*.jpg and val_batch*_pred.jpg.
-- Confusion matrices: runs/detect/results/yolo_runs/yolo11n_long/confusion_matrix*.png.
+**Analytics and artifacts (tracked for GitHub view)**
+- Loss curves and metrics plots: results/yolo11n_long_samples/results.png
+- Confusion matrix: results/yolo11n_long_samples/confusion_matrix.png
+- Validation predictions: results/yolo11n_long_samples/val_batch0_pred.jpg, results/yolo11n_long_samples/val_batch1_pred.jpg, results/yolo11n_long_samples/val_batch2_pred.jpg
+- Training batch snapshot: results/yolo11n_long_samples/train_batch0.jpg
+
+![Training curves](results/yolo11n_long_samples/results.png)
+![Confusion matrix](results/yolo11n_long_samples/confusion_matrix.png)
+![Validation predictions batch 0](results/yolo11n_long_samples/val_batch0_pred.jpg)
+![Validation predictions batch 1](results/yolo11n_long_samples/val_batch1_pred.jpg)
+![Validation predictions batch 2](results/yolo11n_long_samples/val_batch2_pred.jpg)
+![Training batch sample](results/yolo11n_long_samples/train_batch0.jpg)
 
 **Takeaways**
 - Training converged to near-zero losses but metrics stayed at 0, suggesting label/target issues or a degenerate one-class setup. Verify annotations and class mapping, then rerun (longer epochs and ensuring labels are visible to the model).
