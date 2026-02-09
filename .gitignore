@@ -75,6 +75,9 @@ results/*.json
 results/*.csv
 results/*.png
 results/*.jpg
+# Allow tracked sample outputs for README
+!results/yolo11n_long_samples/
+!results/yolo11n_long_samples/**
 logs/
 !logs/.gitkeep
 *.log
