@@ -70,6 +70,7 @@ checkpoints/
 
 # Results and outputs
 results/
+!results/
 !results/.gitkeep
 results/*.json
 results/*.csv
@@ -78,6 +79,7 @@ results/*.jpg
 # Allow tracked sample outputs for README
 !results/yolo11n_long_samples/
 !results/yolo11n_long_samples/**
+results/yolo_runs/
 logs/
 !logs/.gitkeep
 *.log
