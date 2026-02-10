@@ -156,6 +156,13 @@ curl -X POST http://localhost:8000/predict \
 
 ## Recent YOLO Experiments (2026-02)
 
+### YOLO11n — square boxes (4× area), imgsz=1024, GPU
+- Data: data/Processed/yolo_malaria/dataset.yaml with square boxes (longest side, 4× area) and 4 px minimum.
+- Train: 3 epochs, batch=4, device=GPU (RTX 3090), imgsz=1024. Results: [runs/detect/results/yolo_runs/yolo11n_square4x_1024_gpu](runs/detect/results/yolo_runs/yolo11n_square4x_1024_gpu)
+- Val (epoch 3): P=0.242, R=0.421, mAP50=0.186, mAP50-95=0.052.
+- Test: P=0.256, R=0.424, mAP50=0.196, mAP50-95=0.054 (268 images, 7338 instances).
+- Sample predictions (12 test images, no detections observed): [20170607_151553.jpg](runs/detect/results/yolo_runs/yolo11n_square4x_1024_gpu_preds/20170607_151553.jpg), [20170607_155635.jpg](runs/detect/results/yolo_runs/yolo11n_square4x_1024_gpu_preds/20170607_155635.jpg), [20170612_144647.jpg](runs/detect/results/yolo_runs/yolo11n_square4x_1024_gpu_preds/20170612_144647.jpg)
+
 **Setup (runs/detect/results/yolo_runs/yolo11n_long)**
 - Model: YOLO11n pretrained weights (yolo11n.pt), detection task (nc=1).
 - Training: 80 epochs, imgsz=416, batch=4, optimizer=SGD (lr0=0.005, momentum=0.937, weight_decay=0.0005), mosaic disabled, device=CPU.
