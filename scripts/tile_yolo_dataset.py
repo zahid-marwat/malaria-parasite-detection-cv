@@ -102,6 +102,7 @@ def tile_image(
     tile: int,
     overlap: int,
     min_visible: float,
+    keep_empty: bool,
 ) -> int:
     with Image.open(img_path) as img:
         img = img.convert("RGB")
@@ -123,7 +124,7 @@ def tile_image(
                     clipped = clip_and_normalize_box(box, x0, y0, tile_w, tile_h, min_visible)
                     if clipped:
                         tile_boxes.append(clipped)
-                if not tile_boxes:
+                if not tile_boxes and not keep_empty:
                     continue
 
                 tile_img = img.crop((x0, y0, x0 + tile_w, y0 + tile_h))
@@ -142,6 +143,7 @@ def process_split(
     tile: int,
     overlap: int,
     min_visible: float,
+    keep_empty_non_train: bool,
 ) -> int:
     src_images = src_root / "images" / split
     src_labels = src_root / "labels" / split
@@ -153,7 +155,17 @@ def process_split(
     total_tiles = 0
     for img_path in sorted(src_images.glob("*.jpg")):
         labels_path = src_labels / f"{img_path.stem}.txt"
-        total_tiles += tile_image(img_path, labels_path, dst_images, dst_labels, tile, overlap, min_visible)
+        keep_empty = keep_empty_non_train and split != "train"
+        total_tiles += tile_image(
+            img_path,
+            labels_path,
+            dst_images,
+            dst_labels,
+            tile,
+            overlap,
+            min_visible,
+            keep_empty,
+        )
     return total_tiles
 
 
@@ -178,6 +190,11 @@ def main() -> None:
     parser.add_argument("--tile_size", type=int, default=1024)
     parser.add_argument("--overlap", type=int, default=256)
     parser.add_argument("--min_visible", type=float, default=0.2, help="Min visible area fraction to keep a box")
+    parser.add_argument(
+        "--keep_empty_non_train",
+        action="store_true",
+        help="Keep empty tiles for val/test; train still drops empty tiles",
+    )
     args = parser.parse_args()
 
     dst_root: Path = args.dst
@@ -185,7 +202,15 @@ def main() -> None:
 
     total = 0
     for split in ("train", "val", "test"):
-        tiles = process_split(split, args.src, dst_root, args.tile_size, args.overlap, args.min_visible)
+        tiles = process_split(
+            split,
+            args.src,
+            dst_root,
+            args.tile_size,
+            args.overlap,
+            args.min_visible,
+            args.keep_empty_non_train,
+        )
         print(f"{split}: {tiles} tiles")
         total += tiles
     save_dataset_yaml(dst_root)
