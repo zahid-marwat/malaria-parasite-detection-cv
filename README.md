@@ -210,19 +210,19 @@ curl -X POST http://localhost:8000/predict \
 - Test: P=0.379, R=0.525, mAP50=0.364, mAP50-95=0.142. Eval run: [runs/detect/val](runs/detect/val).
 - Notes: Medium model did not surpass YOLO11s; background/label similarity remains the bottleneck.
 
-**Evaluation graphs (YOLO11m validation)**
-![YOLO11m val PR](runs/detect/results/yolo_runs/yolo11m_tiles768_gpu/BoxPR_curve.png)
-![YOLO11m val F1](runs/detect/results/yolo_runs/yolo11m_tiles768_gpu/BoxF1_curve.png)
-![YOLO11m val P](runs/detect/results/yolo_runs/yolo11m_tiles768_gpu/BoxP_curve.png)
-![YOLO11m val R](runs/detect/results/yolo_runs/yolo11m_tiles768_gpu/BoxR_curve.png)
-![YOLO11m val confusion](runs/detect/results/yolo_runs/yolo11m_tiles768_gpu/confusion_matrix.png)
+**Evaluation graphs (YOLO11m validation)** — stored under docs/assets/yolo11m_eval for README visibility
+![YOLO11m val PR](docs/assets/yolo11m_eval/yolo11m_val_pr.png)
+![YOLO11m val F1](docs/assets/yolo11m_eval/yolo11m_val_f1.png)
+![YOLO11m val P](docs/assets/yolo11m_eval/yolo11m_val_p.png)
+![YOLO11m val R](docs/assets/yolo11m_eval/yolo11m_val_r.png)
+![YOLO11m val confusion](docs/assets/yolo11m_eval/yolo11m_val_confusion.png)
 
-**Evaluation graphs (YOLO11m test eval)**
-![YOLO11m test PR](runs/detect/val/BoxPR_curve.png)
-![YOLO11m test F1](runs/detect/val/BoxF1_curve.png)
-![YOLO11m test P](runs/detect/val/BoxP_curve.png)
-![YOLO11m test R](runs/detect/val/BoxR_curve.png)
-![YOLO11m test confusion](runs/detect/val/confusion_matrix.png)
+**Evaluation graphs (YOLO11m test eval)** — stored under docs/assets/yolo11m_eval for README visibility
+![YOLO11m test PR](docs/assets/yolo11m_eval/yolo11m_test_pr.png)
+![YOLO11m test F1](docs/assets/yolo11m_eval/yolo11m_test_f1.png)
+![YOLO11m test P](docs/assets/yolo11m_eval/yolo11m_test_p.png)
+![YOLO11m test R](docs/assets/yolo11m_eval/yolo11m_test_r.png)
+![YOLO11m test confusion](docs/assets/yolo11m_eval/yolo11m_test_confusion.png)
 
 ### Full-image test visuals (non-tiled overlays)
 - Full-frame test overlays (stitched back to originals):  [20170612_143853_annotated.jpg](results/yolo11n_long_samples/annotated_inputs/20170612_143853_annotated.jpg),[20170707_150317_annotated.jpg](results/yolo11n_long_samples/annotated_inputs/20170707_150317_annotated.jpg)
