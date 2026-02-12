@@ -168,7 +168,7 @@ curl -X POST http://localhost:8000/predict \
 - Train: 3 epochs, batch=4, device=GPU (RTX 3090), imgsz=1024. Results: [runs/detect/results/yolo_runs/yolo11n_square4x_1024_gpu](runs/detect/results/yolo_runs/yolo11n_square4x_1024_gpu)
 - Val (epoch 3): P=0.242, R=0.421, mAP50=0.186, mAP50-95=0.052.
 - Test: P=0.256, R=0.424, mAP50=0.196, mAP50-95=0.054 (268 images, 7338 instances).
-- Sample predictions (12 test images, no detections observed): [20170607_151553.jpg](runs/detect/results/yolo_runs/yolo11n_square4x_1024_gpu_preds/20170607_151553.jpg), [20170607_155635.jpg](runs/detect/results/yolo_runs/yolo11n_square4x_1024_gpu_preds/20170607_155635.jpg), [20170612_144647.jpg](runs/detect/results/yolo_runs/yolo11n_square4x_1024_gpu_preds/20170612_144647.jpg)
+- Note: Early runs hit **zero recall** (see YOLO11n_long) due to label/target issues; recall improved only after switching to square-enlarged boxes and retiled datasets.
 
 **Setup (runs/detect/results/yolo_runs/yolo11n_long)**
 - Model: YOLO11n pretrained weights (yolo11n.pt), detection task (nc=1).
@@ -184,15 +184,7 @@ curl -X POST http://localhost:8000/predict \
 **Analytics and artifacts (tracked for GitHub view)**
 - Loss curves and metrics plots: results/yolo11n_long_samples/results.png
 - Confusion matrix: results/yolo11n_long_samples/confusion_matrix.png
-- Validation predictions: results/yolo11n_long_samples/val_batch0_pred.jpg, results/yolo11n_long_samples/val_batch1_pred.jpg, results/yolo11n_long_samples/val_batch2_pred.jpg
 - Training batch snapshot: results/yolo11n_long_samples/train_batch0.jpg
-
-![Training curves](results/yolo11n_long_samples/results.png)
-![Confusion matrix](results/yolo11n_long_samples/confusion_matrix.png)
-![Validation predictions batch 0](results/yolo11n_long_samples/val_batch0_pred.jpg)
-![Validation predictions batch 1](results/yolo11n_long_samples/val_batch1_pred.jpg)
-![Validation predictions batch 2](results/yolo11n_long_samples/val_batch2_pred.jpg)
-![Training batch sample](results/yolo11n_long_samples/train_batch0.jpg)
 
 **Takeaways**
 - Training converged to near-zero losses but metrics stayed at 0, suggesting label/target issues or a degenerate one-class setup. Verify annotations and class mapping, then rerun (longer epochs and ensuring labels are visible to the model).
@@ -209,17 +201,39 @@ curl -X POST http://localhost:8000/predict \
 - Val (best @ epoch 10): P=0.383, R=0.532, mAP50=0.360, mAP50-95=0.140.
 - Test: P=0.394, R=0.520, mAP50=0.369, mAP50-95=0.142.
 - Notes: Better recall with tiling and hard negatives; precision still constrained by background similarity.
+- Visuals: Sample predictions need regeneration for this run; current repo links may not show detections (background similarity).
 
 ### YOLO11m — tiles 768px, overlap 192 (train drops empties; val/test keep empties)
 - Data: data/Processed/yolo_malaria_tiles768 (same as above).
 - Model: YOLO11m, imgsz=1024, mosaic=0, scale=0, device=GPU, epochs=10.
-- Val (best): P=0.375, R=0.525, mAP50=0.356, mAP50-95=0.142.
-- Test: P=0.379, R=0.525, mAP50=0.364, mAP50-95=0.142.
+- Val (best): P=0.375, R=0.525, mAP50=0.356, mAP50-95=0.142. Artifacts: [runs/detect/results/yolo_runs/yolo11m_tiles768_gpu](runs/detect/results/yolo_runs/yolo11m_tiles768_gpu).
+- Test: P=0.379, R=0.525, mAP50=0.364, mAP50-95=0.142. Eval run: [runs/detect/val](runs/detect/val).
 - Notes: Medium model did not surpass YOLO11s; background/label similarity remains the bottleneck.
 
+**Evaluation graphs (YOLO11m validation)**
+![YOLO11m val PR](runs/detect/results/yolo_runs/yolo11m_tiles768_gpu/BoxPR_curve.png)
+![YOLO11m val F1](runs/detect/results/yolo_runs/yolo11m_tiles768_gpu/BoxF1_curve.png)
+![YOLO11m val P](runs/detect/results/yolo_runs/yolo11m_tiles768_gpu/BoxP_curve.png)
+![YOLO11m val R](runs/detect/results/yolo_runs/yolo11m_tiles768_gpu/BoxR_curve.png)
+![YOLO11m val confusion](runs/detect/results/yolo_runs/yolo11m_tiles768_gpu/confusion_matrix.png)
+
+**Evaluation graphs (YOLO11m test eval)**
+![YOLO11m test PR](runs/detect/val/BoxPR_curve.png)
+![YOLO11m test F1](runs/detect/val/BoxF1_curve.png)
+![YOLO11m test P](runs/detect/val/BoxP_curve.png)
+![YOLO11m test R](runs/detect/val/BoxR_curve.png)
+![YOLO11m test confusion](runs/detect/val/confusion_matrix.png)
+
+### Full-image test visuals (non-tiled overlays)
+- Full-frame test overlays (stitched back to originals):  [20170612_143853_annotated.jpg](results/yolo11n_long_samples/annotated_inputs/20170612_143853_annotated.jpg),[20170707_150317_annotated.jpg](results/yolo11n_long_samples/annotated_inputs/20170707_150317_annotated.jpg)
+
+
+![20170612_143853 full-frame overlay](results/yolo11n_long_samples/annotated_inputs/20170612_143853_annotated.jpg)
+![20170707_150317 full-frame overlay](results/yolo11n_long_samples/annotated_inputs/20170707_150317_annotated.jpg)
 ### Remaining problems and next steps
 - Background-foreground ambiguity remains; precision plateaus near 0.38–0.40 with recall ~0.52.
 - Possible next steps: (1) smaller tiles (e.g., 512 with overlap) or P2/small-stride head to enlarge parasites further; (2) stronger hard-negative mining (curated background-only tiles for train with label smoothing); (3) stain/color normalization and targeted background augmentations; (4) label audit to remove duplicates flagged during validation cache creation.
+- Visual gaps: Some linked prediction images may appear empty because detections are scarce; regenerate and embed updated sample outputs after next model iteration.
 
 ## Project Structure
 
