@@ -156,6 +156,13 @@ curl -X POST http://localhost:8000/predict \
 
 ## Recent YOLO Experiments (2026-02)
 
+### What we tried (tiny parasites vs. background)
+- Regenerated labels with square boxes (longest side) and ~4× area expansion; enforced 4 px minimum side.
+- Trained at imgsz=1024 on GPU to better resolve tiny parasites.
+- Tiled datasets: 1024px tiles (overlap 256) with empty tiles dropped; 768px tiles (overlap 192) with empty tiles dropped for train but kept for val/test as hard negatives; min_visible=0.2 and min 4 px side on all tiles.
+- Models: YOLO11n, YOLO11s, YOLO11m (single-class), mosaic/scale disabled.
+- Outcomes: Best mAP50 ~0.36–0.40, recall ~0.52; background patterns remain similar to positives, limiting precision.
+
 ### YOLO11n — square boxes (4× area), imgsz=1024, GPU
 - Data: data/Processed/yolo_malaria/dataset.yaml with square boxes (longest side, 4× area) and 4 px minimum.
 - Train: 3 epochs, batch=4, device=GPU (RTX 3090), imgsz=1024. Results: [runs/detect/results/yolo_runs/yolo11n_square4x_1024_gpu](runs/detect/results/yolo_runs/yolo11n_square4x_1024_gpu)
@@ -189,6 +196,30 @@ curl -X POST http://localhost:8000/predict \
 
 **Takeaways**
 - Training converged to near-zero losses but metrics stayed at 0, suggesting label/target issues or a degenerate one-class setup. Verify annotations and class mapping, then rerun (longer epochs and ensuring labels are visible to the model).
+
+### YOLO11n — tiles 1024px, overlap 256 (train drops empty tiles)
+- Data: data/Processed/yolo_malaria_tiles1024 (tiles with min_visible=0.2, min 4 px side; empty tiles removed for all splits).
+- Model: YOLO11n, imgsz=1024, mosaic=0, scale=0, device=GPU.
+- Test (best): P=0.397, R=0.519, mAP50=0.395, mAP50-95=0.148.
+- Notes: Recall improved over square-only run; background confusion persists.
+
+### YOLO11s — tiles 768px, overlap 192 (train drops empties; val/test keep empties)
+- Data: data/Processed/yolo_malaria_tiles768 (min_visible=0.2, min 4 px side; train empties dropped, val/test keep empties for hard negatives).
+- Model: YOLO11s, imgsz=1024, mosaic=0, scale=0, device=GPU.
+- Val (best @ epoch 10): P=0.383, R=0.532, mAP50=0.360, mAP50-95=0.140.
+- Test: P=0.394, R=0.520, mAP50=0.369, mAP50-95=0.142.
+- Notes: Better recall with tiling and hard negatives; precision still constrained by background similarity.
+
+### YOLO11m — tiles 768px, overlap 192 (train drops empties; val/test keep empties)
+- Data: data/Processed/yolo_malaria_tiles768 (same as above).
+- Model: YOLO11m, imgsz=1024, mosaic=0, scale=0, device=GPU, epochs=10.
+- Val (best): P=0.375, R=0.525, mAP50=0.356, mAP50-95=0.142.
+- Test: P=0.379, R=0.525, mAP50=0.364, mAP50-95=0.142.
+- Notes: Medium model did not surpass YOLO11s; background/label similarity remains the bottleneck.
+
+### Remaining problems and next steps
+- Background-foreground ambiguity remains; precision plateaus near 0.38–0.40 with recall ~0.52.
+- Possible next steps: (1) smaller tiles (e.g., 512 with overlap) or P2/small-stride head to enlarge parasites further; (2) stronger hard-negative mining (curated background-only tiles for train with label smoothing); (3) stain/color normalization and targeted background augmentations; (4) label audit to remove duplicates flagged during validation cache creation.
 
 ## Project Structure
 
